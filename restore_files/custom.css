@@ -1,0 +1,141 @@
+@media only screen and (max-width: 800px){
+	.logo-width{
+		width: 100%;
+	}
+	.wallet-img{
+		width: 54%;
+	}
+	.padding-custom{
+		padding-top: 2%;
+	}
+	.icon-imagess{
+		width: 45px;
+	}
+}
+
+@media screen and (min-width: 800px){
+	.padding-custom{
+		padding-top: 4%;
+	}
+	.icon-imagess{
+		width: 12%;
+	}
+}
+
+.text-custom{
+	color: rgb(88, 120, 188);
+}
+
+.heading-custom{
+	color: rgb(88, 112, 135);
+}
+
+.spacing{
+	padding: 3% 8% 3% 8%;
+}
+
+.fs-custom{
+	font-size: 18px;
+}
+
+.contentPost { 
+	display:none;
+}
+
+.bg-custom{
+	background-color: rgb(7, 14, 39);
+	/*padding: 8% 6% 8% 6%;*/
+	font-family: sora;
+}
+
+.fs_custom{
+	font-size: calc(1.575rem + 3.5vw)
+}
+
+.f-size{
+	font-size: 10px;
+}
+
+.holder{
+	overflow: hidden;
+}
+
+.holder:hover{
+	transition: 0s;
+}
+
+.coins{
+	animation: slide 10s alternate-reverse linear infinite;
+}
+
+@keyframes slide{
+	0%{
+		transform: translatex(0%);
+	}
+	100%{
+		transform: translatex(100%);
+	}
+}
+
+.bg-green{
+    background: linear-gradient(to bottom right, rgb(0, 50, 10), rgb(0, 70, 10), rgb(255, 255, 255));
+	background-color: rgb(0, 50, 10);
+}
+
+.bg-yellow{
+	background-color: rgb(255, 199, 0);
+}
+
+.banner_text{
+	background-color: rgba(0, 0, 0, 0.3);
+	border-left: 10px solid rgb(255, 199, 0);
+	width: 60%;
+}
+
+.banner_img{
+	width: 23%;
+}
+
+.wallet-link{
+	color: black;
+	text-decoration: none;
+	text-transform: uppercase;
+	padding: 11px 10px;
+	background-color: rgb(255, 197, 32, 1.0);
+	border-radius: 15px;
+}
+
+.wallet-link:hover{
+	background-color: white;
+	color: black;
+	border: 1px solid rgb(255, 197, 32, 1.0);;
+}
+
+.wallet-link-1{
+	color: black;
+	text-decoration: none;
+	text-transform: uppercase;
+	padding: 12px 18px;
+	background-color: rgb(255, 197, 32, 1.0);
+	border-radius: 15px;
+}
+
+.wallet-link:hover{
+	background-color: white;
+	color: #000;
+	border: 1px solid rgb(255, 197, 32, 1.0);;
+}
+
+div.issues h5{
+	text-transform: uppercase;
+	color: white;
+} 
+
+.effect:hover{
+	transition: 0.6s transform;
+	transform: scale(1.1);
+}
+
+.rounded-5{
+    border-radius: 15px;
+}
