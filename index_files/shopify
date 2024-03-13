@@ -1,0 +1,190 @@
+(function(d, w, c) {
+    w.ChatraID = '6X78ba5pMukdvN7tD';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+(function () {
+    var currencySymbols = {
+        USD: {symbol: '$', position: 'start'},
+        EUR: {symbol: '€', position: 'end'},
+        GBP: {symbol: '£', position: 'start'}
+    };
+    var cachedData = {};
+
+    function formatPrice (price, currency) {
+        var formattedPrice = (price / 100).toFixed(2);
+        var currencySymbol = (
+            Object.hasOwnProperty.call(currencySymbols, currency) ?
+                currencySymbols[currency] :
+                null
+        );
+
+        if (!currencySymbol) {
+            return currency + ' ' + formattedPrice;
+        }
+        else if (currencySymbol.position === 'start') {
+            return currencySymbol.symbol + '' + formattedPrice;
+        }
+        else if (currencySymbol.position === 'end') {
+            return formattedPrice + ' ' + currencySymbol.symbol;
+        }
+
+        return '';
+    }
+
+    function formatItem (item) {
+        var title = '*' + item.title + '*';
+
+        if (item.url) {
+            var link = document.createElement('a');
+            link.href = location.href;
+
+            var fullUrl = link.protocol + '//' + link.host + item.url;
+            var filteredTitle = title.replace(/\[/g, '(').replace(/\]/g, ')');
+            title = '[' + filteredTitle + '](' + fullUrl + ')';
+        }
+
+        var options;
+        if (item.options) {
+            var optionsArr = [];
+
+            for (var index = 0; index < item.options.length; index++) {
+                optionsArr.push(item.options[index].name + ': ' + item.options[index].value);
+            }
+
+            if (optionsArr.length) {
+                options = '_' + optionsArr.join('; ') + '_';
+            }
+        }
+
+        var quantity = item.quantity !== 1 ? item.quantity + ' × ' : '';
+        var price = formatPrice(item.price || 0, item.currency);
+
+        return (
+            title + '\n' +
+            (options ? options + '\n' : '') +
+            quantity + price
+        );
+    }
+
+    function isFetchExists () {
+        return typeof window.fetch === 'function';
+    }
+    function isNativeFetch () {
+        return (
+            typeof window.fetch === 'function' &&
+            typeof fetch.toString === 'function' &&
+            fetch.toString().indexOf('[native code]') !== -1
+        );
+    }
+    function isNativeXMLHttpRequest () {
+        return (
+            typeof XMLHttpRequest === 'function' &&
+            typeof XMLHttpRequest.toString === 'function' &&
+            XMLHttpRequest.toString().indexOf('[native code]') !== -1
+        );
+    }
+    var useFetch;
+    function ajax (url, callback) {
+        if (typeof useFetch === 'undefined') {
+            useFetch = (
+                isNativeFetch() ||
+                (isFetchExists() && !isNativeXMLHttpRequest())
+            );
+        }
+        if (useFetch) {
+            fetch(url)
+                .then(function (res) {
+                    if (res.ok) {
+                        res.json()
+                            .then(function (data) {
+                                callback(data);
+                            })
+                            .catch(function () {});
+                    }
+                })
+                .catch(function () {});
+
+            if (!isNativeFetch()) {
+                useFetch = false;
+            }
+        }
+        else {
+            var httpRequest = new XMLHttpRequest();
+            var otherFn;
+
+            httpRequest.onreadystatechange = function () {
+                if (httpRequest.readyState === 4) {
+                    if (httpRequest.status === 200) {
+                        try {
+                            callback(JSON.parse(httpRequest.responseText));
+                        }
+                        catch (err) {}
+                    }
+                }
+
+                if (typeof otherFn === 'function') {
+                    otherFn();
+                }
+            };
+
+            try {
+                Object.defineProperty(httpRequest, 'onreadystatechange', {
+                    set: function (fn) {
+                        otherFn = fn;
+                    }
+                });
+            }
+            catch (err) {}
+
+            httpRequest.open('GET', url);
+            httpRequest.send();
+
+            if (isFetchExists() && !isNativeXMLHttpRequest()) {
+                useFetch = true;
+            }
+        }
+    }
+
+    function pollCart () {
+        ajax('/cart.js?Dyo8o6fYTacbWPfPY=1', function (cart) {
+            var cartArr = [];
+            var currency = cart.currency;
+
+            for (var i = 0; i < cart.items.length; i++) {
+                var item = cart.items[i];
+
+                cartArr.push(
+                    formatItem({
+                        title: item.product_title,
+                        options: item.product_has_only_default_variant ?
+                            void 0 :
+                            item.options_with_values,
+                        price: item.price,
+                        quantity: item.quantity,
+                        url: item.url,
+                        currency: currency
+                    })
+                );
+            }
+
+            var data = {
+                Cart: cartArr.join('\n\n') || 'empty',
+                Total: cart.total_price ? formatPrice(cart.total_price, currency) : null
+            };
+
+            if (data.Cart !== cachedData.Cart || data.Total !== cachedData.Total) {
+                Chatra('updateIntegrationData', data);
+                cachedData = data;
+            }
+        });
+    }
+
+    setInterval(pollCart, 15000);
+    pollCart();
+}());
